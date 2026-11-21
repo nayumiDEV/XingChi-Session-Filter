@@ -5,6 +5,7 @@ A lightweight HTTP/HTTPS proxy that filters Codex session identifiers from reque
 ## Features
 
 - **Filters** Codex session IDs, thread IDs, and related headers from requests
+- **Filters** Turn IDs, thread metadata, and client metadata from JSON request body
 - **Two modes**: Standard filtering + Auto-rotate session IDs every 88 requests
 - **Zero config** - Works out of the box with sensible defaults
 - **Cross-platform** - Windows, Linux, macOS
@@ -86,13 +87,26 @@ If this tool helps you, consider sponsoring development:
 ## How It Works
 
 ```
-Client → [Proxy:6969] → Filters Session → [Upstream:api.xingchiapi.com]
+Client → [Proxy:6969] → Filters Headers & Body → [Upstream:api.xingchiapi.com]
                     ↓
-            Removes Session
+ Headers: x-session-id, session-id, thread-id, etc.
+ Body:  thread_id, session_id, turn_id, client_metadata, etc.
 ```
 
+### Filtered Headers
+`x-session-id`, `session-id`, `thread-id`, `x-codex-*`, `x-openai-*`, etc.
+
+### Filtered Body Fields
+- Turn: `turn_id`, `parent_turn_id`, `root_turn_id`, `expected_turn_id`, `turn_trigger`, `tool_output`
+- Thread: `thread_id`, `parent_thread_id`, `forked_from_id`, `attached_to_thread_id`, `project_id`
+- Session: `session_id`, `installation_id`, `window_id`, `cli_version`, `originator`
+- Metadata: `client_metadata`, `responsesapi_client_metadata`, `additional_context`, `environments`
+- Config: `cwd`, `model`, `effort`, `summary`, `personality`, `approval_policy`, `sandbox_policy`, `permissions`, `output_schema`
+- Status: `status`, `history_mode`, `model_provider`, `reasoning_effort`, `created_at`, `updated_at`, `recency_at`
+- Experimental: `collaboration_mode`, `multi_agent_mode`, `cyber_access_program`, `disabled_plugin_ids`, `runtime_workspace_roots`, `approvals_reviewer`
+
 ## Building from Source
-No source available due to XingChi will patch this soon once the source code is available.
+
 ```bash
 npm install
 npm run build
